@@ -1,0 +1,27 @@
+name: build-r111
+on:
+  push:
+    branches: [r111]
+permissions:
+  contents: write
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build r111 artifact from r110 base (builder gates + md5 byte gate)
+        run: |
+          mkdir -p /tmp/lb
+          cp LobsterBrowse-Lite-r110.html /tmp/lb/r110.html
+          node builders/builder111.cjs
+          GOT=$(md5sum /tmp/lb/out.html | cut -d' ' -f1)
+          echo "built md5=$GOT"
+          test "$GOT" = "0f0f4463893fc28c224fe21a4060567c"
+          cp /tmp/lb/out.html LobsterBrowse-Lite-r111.html
+      - name: Commit r111 artifact
+        run: |
+          git config user.name "lobsterbs"
+          git config user.email "jeglikerikkeskole@hotmail.com"
+          git add LobsterBrowse-Lite-r111.html
+          git commit -m "r111 artifact: builder111 gates green, md5 0f0f4463893fc28c224fe21a4060567c [skip ci]"
+          git push
