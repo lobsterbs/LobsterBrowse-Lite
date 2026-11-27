@@ -1,0 +1,73 @@
+// builder114.cjs — LobsterBrowse Lite r114 over r112 (r113 fix rebuilt clean: srcmap raw-key lookup, eager fopr registration, worker witnesses, prose-only note splice, NEW fail-set parse gate)
+// Gates: base md5/size, anchor uniqueness, splice, reverse byte-exact reconstruction,
+// token counts, note hygiene, EVERY-BLOCK-PARSES fail-set parity (the r99.146/r113 lesson),
+// output md5 byte gate, output size. Writes /tmp/lb/r114.html.
+const fs = require('fs');
+const crypto = require('crypto');
+const vm = require('vm');
+const PIN_BASE_MD5 = 'f34906eb8ec855aef83efe3abed46c15';
+let g = 0;
+function gate(ok, name) { if (!ok) { console.log('FAIL ' + name); process.exit(1); } g++; console.log('PASS ' + name); }
+const md5 = (s) => crypto.createHash('md5').update(s).digest('hex');
+const base = fs.readFileSync('/tmp/lb/r112.html', 'utf8');
+gate(md5(base) === PIN_BASE_MD5, 'base md5 ' + md5(base));
+gate(Buffer.byteLength(base) === 6014492, 'base bytes 6014492 got ' + Buffer.byteLength(base));
+const PATCHES = [["__zlRealToPx.get(__k112)", "__zlRealToPx.get(s)"], ["    });\n  }\n  /* r99.127 frres", "    });\n  }\n  /* r113: eager fopr registration: touch contentWindow once at insertion so the raw child to proxy\n     map exists before the first offer message checks e.source (the sdk evaluates e.source first) */\n  try {\n    var __eo113 = new MutationObserver(function (muts) {\n      for (var mi = 0; mi < muts.length; mi++) for (var ni = 0; ni < muts[mi].addedNodes.length; ni++) {\n        var nd = muts[mi].addedNodes[ni];\n        if (nd && nd.tagName === 'IFRAME' && nd.getAttribute && nd.getAttribute('data-zl-frame')) { try { void nd.contentWindow; } catch (e113a) {} }\n      }\n    });\n    __eo113.observe(document.documentElement || document.body, { childList: true, subtree: true });\n  } catch (e113b) {}\n  /* r99.127 frres"], ["var seq = 0, pend = new Map();", "/* r112 worker witnesses: the r111 field run proved the shim installs but the worker goes silent before any digest; these taps name the exact dying lane. All behind try/catch, all through the capped wlog channel. */\n(function () {\n  if (self.__zcW112) return;\n  self.__zcW112 = 1;\n  var WN = 0;\n  function WL(m) { try { if (WN < 48) { WN++; self.postMessage({ __zlwf: 1, k: 'wlog', m: String(m).slice(0, 110) }); } } catch (eW) {} }\n  function shp(d) { try { if (typeof d === 'string') return 'str ' + d.length + ' ' + d.slice(0, 40); if (d && typeof d === 'object') return 'obj{' + Object.keys(d).slice(0, 8).join(',') + '}'; return typeof d; } catch (e) { return '?'; } }\n  WL('zc w112 start');\n  /* 1. error + unhandledrejection: the silent async death class becomes visible */\n  try {\n    var EN = 0, UN = 0;\n    self.addEventListener('error', function (e) { if (EN < 4) { EN++; WL('zc err ' + String((e && e.message) || e).slice(0, 80) + ' @' + String((e && e.filename) || '').slice(-40) + ':' + (e && e.lineno)); } });\n    self.addEventListener('unhandledrejection', function (e) { if (UN < 4) { UN++; var r = e && e.reason; WL('zc urej ' + String((r && r.message) || r).slice(0, 90)); } });\n  } catch (e1) {}\n  /* 2. importScripts: proves the SDK actually loaded inside the worker */\n  try {\n    if (typeof importScripts === 'function') {\n      var OIS = importScripts, IN = 0;\n      importScripts = function () { if (IN < 2) { IN++; WL('zc imp ' + Array.prototype.join.call(arguments, ' ').slice(0, 90)); } return OIS.apply(self, arguments); };\n    }\n  } catch (e2) {}\n  /* 3. self.postMessage wrap: the hello and every direct send becomes visible (internal relay traffic skipped) */\n  try {\n    var OPM = null;\n    OPM = self.postMessage.bind(self);\n    var PN = 0;\n    self.postMessage = function (m) { try { if (!(m && m.__zlwf === 1) && PN < 6) { PN++; WL('zc post-out ' + shp(m)); } } catch (e) {} return OPM.apply(null, arguments); };\n  } catch (e3) {}\n  /* 4. self.onmessage accessor: did the SDK register the command handler, and do commands arrive */\n  try {\n    var proto = Object.getPrototypeOf(self);\n    var desc = Object.getOwnPropertyDescriptor(proto, 'onmessage') || Object.getOwnPropertyDescriptor(self, 'onmessage');\n    var cur = null, CN = 0;\n    if (desc && desc.configurable && desc.set) {\n      Object.defineProperty(self, 'onmessage', {\n        configurable: true, enumerable: true,\n        get: function () { return cur; },\n        set: function (fn) { cur = fn; try { WL('zc onmsg ' + typeof fn); } catch (eW2) {} try { desc.set.call(self, typeof fn === 'function' ? function (ev) { var d = ev && ev.data; if (!(d && d.__zlwf === 1) && CN < 6) { CN++; try { WL('zc cmd ' + shp(d) + ' ports=' + (ev && ev.ports ? ev.ports.length : 0)); } catch (e) {} } return fn.call(this, ev); } : fn); } catch (eS) {} }\n      });\n    } else WL('zc onmsg nodef');\n  } catch (e4) { WL('zc onmsg fail ' + String(e4 && e4.message).slice(0, 60)); }\n  /* 5. addEventListener message wrap: the other registration path */\n  try {\n    var OAE = self.addEventListener.bind(self), AEN = 0, AC = 0;\n    self.addEventListener = function (t, fn, o) {\n      if (t === 'message' && typeof fn === 'function') {\n        if (AEN < 2) { AEN++; WL('zc addmsg'); }\n        return OAE(t, function (ev) { var d = ev && ev.data; if (!(d && d.__zlwf === 1) && AC < 6) { AC++; try { WL('zc cmd-l ' + shp(d) + ' ports=' + (ev && ev.ports ? ev.ports.length : 0)); } catch (e) {} } return fn.call(this, ev); }, o);\n      }\n      return OAE(t, fn, o);\n    };\n  } catch (e5) {}\n  /* 6. MessagePort taps: the attestation port-channel dance becomes visible both directions */\n  try {\n    var MPP = MessagePort.prototype, PON = 0, PIN = 0, PAE = 0;\n    var OPm = MPP.postMessage;\n    MPP.postMessage = function (m) { try { if (PON < 8) { PON++; WL('zc port-out ' + shp(m)); } } catch (e) {} return OPm.apply(this, arguments); };\n    var pd = Object.getOwnPropertyDescriptor(MPP, 'onmessage');\n    if (pd && pd.set) {\n      var pcur = null;\n      Object.defineProperty(MPP, 'onmessage', {\n        configurable: true, enumerable: true,\n        get: function () { return pcur; },\n        set: function (fn) { var f2 = fn; try { pcur = fn; if (typeof fn === 'function') f2 = function (ev) { if (PIN < 8) { PIN++; try { WL('zc port-in ' + shp(ev && ev.data)); } catch (e) {} } return fn.call(this, ev); }; } catch (e) {} try { pd.set.call(this, f2); } catch (eS) {} }\n      });\n    }\n    var OPA = MPP.addEventListener;\n    MPP.addEventListener = function (t, fn, o) {\n      if (t === 'message' && typeof fn === 'function') {\n        if (PAE < 2) { PAE++; WL('zc port-addmsg'); }\n        return OPA.call(this, t, function (ev) { if (PIN < 8) { PIN++; try { WL('zc port-in ' + shp(ev && ev.data)); } catch (e) {} } return fn.call(this, ev); }, o);\n      }\n      return OPA.apply(this, arguments);\n    };\n  } catch (e6) { WL('zc port fail ' + String(e6 && e6.message).slice(0, 60)); }\n  /* 7. subtle surface: every non-digest WebCrypto call becomes visible before it can die silently */\n  try {\n    var sub = self.crypto && self.crypto.subtle;\n    if (sub) {\n      ['generateKey', 'importKey', 'exportKey', 'encrypt', 'decrypt', 'sign', 'verify', 'deriveBits', 'deriveKey'].forEach(function (nm) {\n        var of = sub[nm];\n        if (typeof of === 'function') { var n = 0; sub[nm] = function () { if (n < 2) { n++; try { WL('zc subtle.' + nm + ' ' + String((arguments[0] && arguments[0].name) || arguments[0]).slice(0, 40)); } catch (e) {} } return of.apply(sub, arguments); }; }\n      });\n      if (!sub.wrapKey) sub.wrapKey = function () { WL('zc subtle.wrapKey'); return Promise.reject(new DOMException('wrapKey is not available in this worker', 'NotSupportedError')); };\n      if (!sub.unwrapKey) sub.unwrapKey = function () { WL('zc subtle.unwrapKey'); return Promise.reject(new DOMException('unwrapKey is not available in this worker', 'NotSupportedError')); };\n    } else WL('zc subtle absent');\n  } catch (e7) {}\n  WL('zc w112 armed');\n})();\n\n      var seq = 0, pend = new Map();"], ["build rv-r112", "build rv-r114"], ["var ZL_VERSION = 'zl-ship95';", "var ZL_VERSION = 'zl-ship97';"], ["r112 (WIDGET LANE: the r111 export proves the stall sits before the worker: the anchor port offer reached the sorry rehost but the sdk offer waiter demands e.source === iframe.contentWindow, and the vessel standin served a fresh proxy of the page own window there while e.source was the facade proxy of the real blob child, two objects, so the check failed and the 15s timeout re-anchored forever, and the page own recaptcha-setup request looped back into the page and never reached the anchor; so contentWindow is now one cached stable proxy per element and state, postMessage through it forwards to the real current child with the port transfer kept, and MessageEvent.source reports that same proxy, witnessed by fopr cwpm fwd and fopr srcmap reg and xpm srcmap hit; set the custom relay to mercurywork and retry the search, then click the recaptcha checkbox)", "r114 (WIDGET LANE: r113 never booted because my r113 build-note splice was cut one sequence too wide and deleted live code from the shell script leaving an orphan paren, so this rebuild over r112 carries the same intended fix done right: the srcmap lookup keys by the raw child window, a vessel observer touches contentWindow at iframe insertion so the identity map exists before the first offer, the worker prelude carries witness taps so the next export names any deeper stall, and the builder now gates that every script block parses; set the custom relay to mercurywork and retry the search, then click the recaptcha checkbox)"]];
+let out = base;
+for (let i = 0; i < PATCHES.length; i++) {
+  const n = out.split(PATCHES[i][0]).length - 1;
+  gate(n === 1, 'anchor ' + i + ' unique (n=' + n + ')');
+  out = out.replace(PATCHES[i][0], PATCHES[i][1]);
+}
+let rev = out;
+for (let i = PATCHES.length - 1; i >= 0; i--) {
+  const n = rev.split(PATCHES[i][1]).length - 1;
+  gate(n === 1, 'new anchor ' + i + ' unique (n=' + n + ')');
+  rev = rev.replace(PATCHES[i][1], PATCHES[i][0]);
+}
+gate(rev === base, 'reverse byte-exact reconstruction');
+/* THE r113 LESSON GATE: naive-block parse fail-set of out must equal the base fail-set exactly.
+   r113 shipped with block 10 failing (orphan paren from a too-wide note splice) and no gate noticed. */
+function failSet(t) {
+  const res = []; let i = 0, idx = 0;
+  while (true) {
+    const s = t.indexOf('<script', i); if (s === -1) break;
+    const e = t.indexOf('</script>', s);
+    const bdy = e === -1 ? t.slice(s) : t.slice(s, e);
+    const m = bdy.match(/<script[^>]*>([\s\S]*)$/);
+    try { new vm.Script(m ? m[1] : bdy); } catch (er) { res.push(idx); }
+    if (e === -1) break;
+    i = e + 9; idx++;
+  }
+  return res.join(',');
+}
+const fsBase = failSet(base), fsOut = failSet(out);
+gate(fsOut === fsBase, 'EVERY-BLOCK-PARSES fail-set parity: base [' + fsBase + '] out [' + fsOut + ']');
+const tk = (s) => out.split(s).length - 1;
+gate(tk('__zlRealToPx.get(s)') === 1, 'token get(s)=1 got ' + tk('__zlRealToPx.get(s)'));
+gate(tk('__zlRealToPx.get(__k112)') === 0, 'token get(__k112)=0 got ' + tk('__zlRealToPx.get(__k112)'));
+gate(tk('__eo113') === 2, 'token __eo113=2 got ' + tk('__eo113'));
+gate(tk('__foprPxCache') === 3, 'token __foprPxCache=3 got ' + tk('__foprPxCache'));
+gate(tk('__zlRealToPx') === 6, 'token __zlRealToPx=6 got ' + tk('__zlRealToPx'));
+gate(tk('__zcW112') === 2, 'token __zcW112=2 got ' + tk('__zcW112'));
+gate(tk('zc w112 armed') === 1, 'token zc w112 armed=1 got ' + tk('zc w112 armed'));
+gate(tk('rv-r114') === 1, 'token rv-r114=1 got ' + tk('rv-r114'));
+gate(tk('rv-r113') === 0, 'token rv-r113=0 got ' + tk('rv-r113'));
+gate(tk('zl-ship97') === 1, 'token zl-ship97=1 got ' + tk('zl-ship97'));
+gate(tk('zl-ship96') === 0, 'token zl-ship96=0 got ' + tk('zl-ship96'));
+gate(tk('r113 never booted') === 1, 'token note r114 prose=1');
+const NOTE = PATCHES[5][1];
+gate(NOTE.indexOf(String.fromCharCode(10)) === -1, 'note single line');
+gate(!/['\\\u0024\u0060]/.test(NOTE), 'note quote hygiene');
+gate(!NOTE.includes('</'), 'note no closing tag seq');
+const om = md5(out);
+console.log('OUTMD5 ' + om);
+console.log('OUTBYTES ' + Buffer.byteLength(out));
+console.log('OUTCHARS ' + out.length);
+if (process.env.PIN_OUT_MD5) {
+  gate(om === process.env.PIN_OUT_MD5, 'output md5 pin');
+  gate(Buffer.byteLength(out) === Number(process.env.PIN_OUT_BYTES), 'output bytes pin');
+}
+fs.writeFileSync('/tmp/lb/r114.html', out);
+console.log('WROTE /tmp/lb/r114.html');
+console.log('ALL GATES PASS (' + g + ')');

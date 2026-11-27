@@ -1,0 +1,27 @@
+name: build-r114
+on:
+  push:
+    branches: [r114]
+permissions:
+  contents: write
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build r114 artifact from r112 base (builder gates + md5 byte gate + fail-set parse gate)
+        run: |
+          mkdir -p /tmp/lb
+          cp LobsterBrowse-Lite-r112.html /tmp/lb/r112.html
+          node builders/builder114.cjs
+          GOT=$(md5sum /tmp/lb/r114.html | cut -d' ' -f1)
+          echo "built md5=$GOT"
+          test "$GOT" = "e0929e738a6a6f8405d86bbbe60103bb"
+          cp /tmp/lb/r114.html LobsterBrowse-Lite-r114.html
+      - name: Commit r114 artifact
+        run: |
+          git config user.name "lobsterbs"
+          git config user.email "jeglikerikkeskole@hotmail.com"
+          git add LobsterBrowse-Lite-r114.html
+          git commit -m "r114 artifact: builder114 gates green incl every-block-parses, md5 e0929e738a6a6f8405d86bbbe60103bb [skip ci]"
+          git push
