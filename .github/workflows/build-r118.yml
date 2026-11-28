@@ -1,0 +1,27 @@
+name: build-r118
+on:
+  push:
+    branches: [r118]
+permissions:
+  contents: write
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build r118 artifact from r117 base (builder gates + md5 byte gate + fail-set parse gate + fu mock decision table)
+        run: |
+          mkdir -p /tmp/lb
+          cp LobsterBrowse-Lite-r117.html /tmp/lb/r117.html
+          node builders/builder118.cjs
+          GOT=$(md5sum /tmp/lb/r118.html | cut -d' ' -f1)
+          echo "built md5=$GOT"
+          test "$GOT" = "c726f2ed438ee1f971d1e8dc744e8f73"
+          cp /tmp/lb/r118.html LobsterBrowse-Lite-r118.html
+      - name: Commit r118 artifact
+        run: |
+          git config user.name "lobsterbs"
+          git config user.email "jeglikerikkeskole@hotmail.com"
+          git add LobsterBrowse-Lite-r118.html
+          git commit -m "r118 artifact: builder118 gates green incl fu mock decision table, md5 c726f2ed438ee1f971d1e8dc744e8f73 [skip ci]"
+          git push
